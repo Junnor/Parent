@@ -1,5 +1,5 @@
 //
-//  PostCollectionViewController.swift
+//  SecondViewController.swift
 //  Parent
 //
 //  Created by Ju on 2017/12/29.
@@ -8,8 +8,13 @@
 
 import UIKit
 
-class PostCollectionViewController: UIViewController {
+extension NSNotification.Name {
+    static let ShowMenuItem = NSNotification.Name(rawValue: "ShowMenuItem")
+}
 
+class SecondViewController: UIViewController {
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -21,13 +26,11 @@ class PostCollectionViewController: UIViewController {
     
     @objc private func menuItemShow(notification: NSNotification) {
         guard let userInfo = notification.userInfo,
-            let index = userInfo["index"] as? Int,
+            let _ = userInfo["index"] as? Int,
             let _ = userInfo["value"] as? Bool else {
                 return
         }
         
-        print("post index = \(index)")
-        
-        
     }
+
 }

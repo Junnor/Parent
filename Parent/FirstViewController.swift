@@ -1,5 +1,5 @@
 //
-//  MoeBuyCollectionViewController.swift
+//  FirstViewController.swift
 //  Parent
 //
 //  Created by Ju on 2017/12/29.
@@ -8,13 +8,8 @@
 
 import UIKit
 
-extension NSNotification.Name {
-    static let ShowMenuItem = NSNotification.Name(rawValue: "ShowMenuItem")
-}
+class FirstViewController: UIViewController {
 
-class MoeBuyCollectionViewController: UIViewController {
-
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -26,14 +21,12 @@ class MoeBuyCollectionViewController: UIViewController {
     
     @objc private func menuItemShow(notification: NSNotification) {
         guard let userInfo = notification.userInfo,
-            let index = userInfo["index"] as? Int,
+            let _ = userInfo["index"] as? Int,
             let _ = userInfo["value"] as? Bool else {
                 return
         }
         
-        print("moebuy index = \(index)")
         
         
     }
-
 }

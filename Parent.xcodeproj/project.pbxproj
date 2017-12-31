@@ -7,26 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B1558E11FF8BFAE004E13B4 /* ThirdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1558E01FF8BFAE004E13B4 /* ThirdViewController.swift */; };
 		8BF90A2B1FF67756003FEA0B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF90A2A1FF67756003FEA0B /* AppDelegate.swift */; };
 		8BF90A301FF67756003FEA0B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BF90A2E1FF67756003FEA0B /* Main.storyboard */; };
 		8BF90A321FF67756003FEA0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BF90A311FF67756003FEA0B /* Assets.xcassets */; };
 		8BF90A351FF67756003FEA0B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BF90A331FF67756003FEA0B /* LaunchScreen.storyboard */; };
-		8BF90A3D1FF6779C003FEA0B /* MoeBuyCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF90A3C1FF6779C003FEA0B /* MoeBuyCollectionViewController.swift */; };
-		8BF90A3F1FF67875003FEA0B /* PostCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF90A3E1FF67875003FEA0B /* PostCollectionViewController.swift */; };
-		8BF90A411FF67D5E003FEA0B /* MyCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF90A401FF67D5D003FEA0B /* MyCollectionViewController.swift */; };
+		8BF90A3D1FF6779C003FEA0B /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF90A3C1FF6779C003FEA0B /* SecondViewController.swift */; };
+		8BF90A3F1FF67875003FEA0B /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF90A3E1FF67875003FEA0B /* FirstViewController.swift */; };
+		8BF90A411FF67D5E003FEA0B /* ContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF90A401FF67D5D003FEA0B /* ContainerController.swift */; };
 		8BF90A431FF68417003FEA0B /* JuScrollContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF90A421FF68417003FEA0B /* JuScrollContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8B1558E01FF8BFAE004E13B4 /* ThirdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdViewController.swift; sourceTree = "<group>"; };
 		8BF90A271FF67756003FEA0B /* Parent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Parent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BF90A2A1FF67756003FEA0B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8BF90A2F1FF67756003FEA0B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8BF90A311FF67756003FEA0B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8BF90A341FF67756003FEA0B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8BF90A361FF67756003FEA0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8BF90A3C1FF6779C003FEA0B /* MoeBuyCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoeBuyCollectionViewController.swift; sourceTree = "<group>"; };
-		8BF90A3E1FF67875003FEA0B /* PostCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCollectionViewController.swift; sourceTree = "<group>"; };
-		8BF90A401FF67D5D003FEA0B /* MyCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCollectionViewController.swift; sourceTree = "<group>"; };
+		8BF90A3C1FF6779C003FEA0B /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
+		8BF90A3E1FF67875003FEA0B /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
+		8BF90A401FF67D5D003FEA0B /* ContainerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerController.swift; sourceTree = "<group>"; };
 		8BF90A421FF68417003FEA0B /* JuScrollContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuScrollContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -61,9 +63,10 @@
 			isa = PBXGroup;
 			children = (
 				8BF90A2A1FF67756003FEA0B /* AppDelegate.swift */,
-				8BF90A401FF67D5D003FEA0B /* MyCollectionViewController.swift */,
-				8BF90A3C1FF6779C003FEA0B /* MoeBuyCollectionViewController.swift */,
-				8BF90A3E1FF67875003FEA0B /* PostCollectionViewController.swift */,
+				8BF90A401FF67D5D003FEA0B /* ContainerController.swift */,
+				8BF90A3E1FF67875003FEA0B /* FirstViewController.swift */,
+				8BF90A3C1FF6779C003FEA0B /* SecondViewController.swift */,
+				8B1558E01FF8BFAE004E13B4 /* ThirdViewController.swift */,
 				8BF90A421FF68417003FEA0B /* JuScrollContentView.swift */,
 				8BF90A2E1FF67756003FEA0B /* Main.storyboard */,
 				8BF90A311FF67756003FEA0B /* Assets.xcassets */,
@@ -145,10 +148,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BF90A3F1FF67875003FEA0B /* PostCollectionViewController.swift in Sources */,
+				8BF90A3F1FF67875003FEA0B /* FirstViewController.swift in Sources */,
 				8BF90A431FF68417003FEA0B /* JuScrollContentView.swift in Sources */,
-				8BF90A3D1FF6779C003FEA0B /* MoeBuyCollectionViewController.swift in Sources */,
-				8BF90A411FF67D5E003FEA0B /* MyCollectionViewController.swift in Sources */,
+				8BF90A3D1FF6779C003FEA0B /* SecondViewController.swift in Sources */,
+				8BF90A411FF67D5E003FEA0B /* ContainerController.swift in Sources */,
+				8B1558E11FF8BFAE004E13B4 /* ThirdViewController.swift in Sources */,
 				8BF90A2B1FF67756003FEA0B /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -10,44 +10,13 @@ import UIKit
 
 class JuScrollContentView: UIView {
     
-    // designated init view controller
-    init(frame: CGRect, buttonItems: [UIButton], viewItems: [UIView]) {
-        super.init(frame: frame)
-        
-        if buttonItems.count != viewItems.count {
-            fatalError("items count not equal")
-        }
-        
-        self.buttonItems = buttonItems
-        self.viewItems = viewItems
-        
-        for _ in 0..<buttonItems.count {
-            firstShowWithItems.append(false)
-        }
-        
-        addAllSubView()
-        layoutSomeSubView()
-        firstLoadDataNotification()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        layoutSomeSubView()
-        print("xxx frame = \(frame), bounds: \(bounds)")
-    }
-    
     // MARK: - 父类通知
     var containerTitle = ""  // 获取superview的title，为了更好的通知
     var atCurrentIndexNotificationName: NSNotification.Name {
         return NSNotification.Name(rawValue: "com.nyato.manzhanmiao.\(containerTitle)AtMenuItem")
     }
     
-    // MARK: - Public
+    // MARK: - Public properties
     
     var defaultOffsetPage = 0   // 第一次展示的时候显示的页面，默认为第一页
     
@@ -89,66 +58,83 @@ class JuScrollContentView: UIView {
         }
     }
     
-    
-    // MARK: - Private properties
-    private var scrollView: UIScrollView!
-    
-    private var buttonItems: [UIButton] = []
-    private var viewItems: [UIView] = []
-    
-    private var titles: [String] = [String]()
-    private var itemsViewFrame: [CGRect] = [CGRect]()
-    private var itemsOriginX: [CGFloat] = [CGFloat]()
-    private var itemsViewFrameOriginX: [CGFloat] = [CGFloat]()
-    
-    private var indicatorView: UIView!
-    
-    private var indicatorViewLastOriginX: CGFloat = 0.0 {
-        didSet {
-            indicatorCopyView?.frame.origin.x = indicatorViewLastOriginX
-        }
-    }
-    
-    private var scale: CGFloat!
-    
-    private let moveDuration: TimeInterval = 0.2
-    
-    // Due to 'sectionIndicatorView' will reset frame when viewDidDisappear did called,
-    // so, add 'indicatorCopyView' as the copy view
-    private var indicatorCopyView: UIView!
-    private var shouldAdjustCopyIndicatorView = false
-    
-    
-    // MARK: - Outlets
-    
     var menuViewHeight: CGFloat = 49 {
         didSet {
             layoutIfNeeded()
         }
     }
     
+    // MARK: - Designated init view controller
+    init(frame: CGRect, buttonItems: [UIButton], viewItems: [UIView]) {
+        super.init(frame: frame)
+        
+        if buttonItems.count != viewItems.count {
+            fatalError("items count not equal")
+        }
+        
+        self.buttonItems = buttonItems
+        self.viewItems = viewItems
+        
+        for _ in 0..<buttonItems.count {
+            firstShowWithItems.append(false)
+        }
+        
+        addAllSubView()
+        setupConstraints()
+        layoutSomeSubView()
+        firstLoadDataNotification()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        print("layoutSubviews")
+        
+        layoutSomeSubView()
+    }
+    
+    // MARK: - Private properties
+    
+    private var buttonItems: [UIButton] = []
+    private var viewItems: [UIView] = []
     
     private var menuView: UIView!
-    
-    private var customTitleView: UIView!
+    private var scrollView: UIScrollView!
+    private var menuTitleView: UIView!
     private var titleStackView: UIStackView!
+    private var indicatorView: UIView!
+
+    private var titles: [String] = [String]()
+    private var indicatorOriginsX: [CGFloat] = [CGFloat]()
+    private var itemsViewFrameOriginX: [CGFloat] = [CGFloat]()
     
-    // MARK: - View controller lifecycle
+    private var indicatorViewLastOriginX: CGFloat = 0.0
+    private var scale: CGFloat!
+    
+    private let moveDuration: TimeInterval = 0.2
+    private let realTitleBottomMargin: CGFloat = 6
+    
+    // MARK: - Helper
     
     private func addAllSubView() {
+        // Menu container
         menuView = UIView()
         menuView.backgroundColor = menuTintColor
         self.addSubview(menuView)
         
-        scrollView = UIScrollView()
-        customTitleView = UIView()
+        // Title container
+        menuTitleView = UIView()
         titleStackView = UIStackView()
+        
+        // Indicator
         indicatorView = UIView()
-        indicatorCopyView = UIView()
-        
         indicatorView.backgroundColor = indicatorColor
-        indicatorCopyView.backgroundColor = indicatorColor
-        
+
+        // ScrollView
+        scrollView = UIScrollView()
         scrollView.delegate = self
         scrollView.isPagingEnabled = true
         scrollView.showsVerticalScrollIndicator = false
@@ -159,10 +145,11 @@ class JuScrollContentView: UIView {
             titles.append(button.currentTitle!)
             button.titleLabel?.textColor = itemColor
             button.titleLabel?.font = itemFont
-        }
-        
-        for item in buttonItems {
-            titleStackView.addArrangedSubview(item)
+            button.addTarget(self,
+                             action: #selector(contentOffSetXForButton(sender:)),
+                             for: .touchUpInside)
+
+            titleStackView.addArrangedSubview(button)
         }
         
         titleStackView.alignment = .center
@@ -173,106 +160,119 @@ class JuScrollContentView: UIView {
             scrollView.addSubview(viewItems[i])
         }
         
-        customTitleView.addSubview(titleStackView)
-        customTitleView.addSubview(indicatorView)
-        customTitleView.addSubview(indicatorCopyView)
+        menuTitleView.addSubview(titleStackView)
+        menuTitleView.addSubview(indicatorView)
         
-        menuView.addSubview(customTitleView)
-        
+        menuView.addSubview(menuTitleView)
         
         self.addSubview(scrollView)
     }
     
-    
-    private func layoutSomeSubView() {
+    private func setupConstraints() {
+        menuView.translatesAutoresizingMaskIntoConstraints = false
+        menuTitleView.translatesAutoresizingMaskIntoConstraints = false
+        titleStackView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         
         // Menu view
-        var menuFrame = self.frame
-        menuFrame.size.height = menuViewHeight
-        menuView.frame = menuFrame
+        let menuTop = menuView.topAnchor.constraint(equalTo: topAnchor)
+        let menuLeading = menuView.leadingAnchor.constraint(equalTo: leadingAnchor)
+        let menuTrailing = menuView.trailingAnchor.constraint(equalTo: trailingAnchor)
+        let menuHeight = menuView.heightAnchor.constraint(equalToConstant: menuViewHeight)
         
-        var scrollViewFrame = self.frame
-        scrollViewFrame.size.height -= menuViewHeight
-        scrollViewFrame.origin.y = menuViewHeight
+        var menuConstraints: [NSLayoutConstraint] = []
+        menuConstraints.append(menuTop)
+        menuConstraints.append(menuLeading)
+        menuConstraints.append(menuTrailing)
+        menuConstraints.append(menuHeight)
         
-        scrollView.frame = scrollViewFrame
+        // Title view
+        let titleViewTop = menuTitleView.topAnchor.constraint(equalTo: menuView.topAnchor)
+        let titleViewLeading = menuTitleView.leadingAnchor.constraint(equalTo: menuView.leadingAnchor)
+        let titleViewTrailing = menuTitleView.trailingAnchor.constraint(equalTo: menuView.trailingAnchor)
+        let titleViewBottom = menuTitleView.bottomAnchor.constraint(equalTo: menuView.bottomAnchor)  // Add some margin if wanted
         
-        let width = scrollViewFrame.width
-        let height = scrollViewFrame.height
+        var titleViewConstraints: [NSLayoutConstraint] = []
+        titleViewConstraints.append(titleViewTop)
+        titleViewConstraints.append(titleViewLeading)
+        titleViewConstraints.append(titleViewTrailing)
+        titleViewConstraints.append(titleViewBottom)
         
-        scrollView.contentSize = CGSize(width: width * CGFloat(buttonItems.count), height: height)
+        // Title stack view
+        let titleStackViewTop = titleStackView.topAnchor.constraint(equalTo: menuTitleView.topAnchor)
+        let titleStackViewLeading = titleStackView.leadingAnchor.constraint(equalTo: menuTitleView.leadingAnchor)
+        let titleStackViewTrailing = titleStackView.trailingAnchor.constraint(equalTo: menuTitleView.trailingAnchor)
+        let titleStatckViewBottom = titleStackView.bottomAnchor.constraint(equalTo: menuTitleView.bottomAnchor, constant: -realTitleBottomMargin)
+        
+        var titleStackViewConstraints: [NSLayoutConstraint] = []
+        titleStackViewConstraints.append(titleStackViewTop)
+        titleStackViewConstraints.append(titleStackViewLeading)
+        titleStackViewConstraints.append(titleStackViewTrailing)
+        titleStackViewConstraints.append(titleStatckViewBottom)
+        
+        // Scroll view
+        var scrollViewConstraints: [NSLayoutConstraint] = []
+        let scrollViewTop = scrollView.topAnchor.constraint(equalTo: menuView.bottomAnchor)
+        let scrollViewLeading = scrollView.leadingAnchor.constraint(equalTo: leadingAnchor)
+        let scrollViewTrailing = scrollView.trailingAnchor.constraint(equalTo: trailingAnchor)
+        let scrollViewBottom = scrollView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        
+        scrollViewConstraints.append(scrollViewTop)
+        scrollViewConstraints.append(scrollViewLeading)
+        scrollViewConstraints.append(scrollViewTrailing)
+        scrollViewConstraints.append(scrollViewBottom)
+        
+        // Activate
+        var all: [NSLayoutConstraint] = []
+        all += menuConstraints
+        all += titleViewConstraints
+        all += titleStackViewConstraints
+        all += scrollViewConstraints
+        
+        NSLayoutConstraint.activate(all)
+    }
+    
+    private func layoutSomeSubView() {
+        var contentSize = scrollView.bounds.size
+        contentSize.width = contentSize.width * CGFloat(buttonItems.count)
+        scrollView.contentSize = contentSize
         
         // has [viewControllersFrame]
-        var vcOriginX: CGFloat = 0
-        itemsViewFrame.removeAll()
         itemsViewFrameOriginX.removeAll()
-        for _ in 0 ..< viewItems.count {
-            itemsViewFrame.append(CGRect(x: vcOriginX, y: 0, width: width, height: height))
-            itemsViewFrameOriginX.append(vcOriginX)
-            vcOriginX += width
-        }
-        
         for i in 0 ..< viewItems.count {
-            viewItems[i].frame = itemsViewFrame[i]
+            var itemFrame = scrollView.bounds
+            let originX = itemFrame.width * CGFloat(i)
+            itemFrame.origin.x = originX
+            viewItems[i].frame = itemFrame
+            print("originX = \(originX), frame: \(itemFrame)")
+
+            itemsViewFrameOriginX.append(originX)
         }
-        
-        // Title 
-        let titleViewWidth: CGFloat = UIScreen.main.bounds.width
-        let titleViewHeight: CGFloat = 44
-        let stackViewHeight: CGFloat = 40
-        
-        let titleViewFrame = CGRect(x: 0, y: 0, width: titleViewWidth, height: titleViewHeight)
-        let stackViewFrame = CGRect(x: 0, y: 0, width: titleViewWidth, height: stackViewHeight)
-        let indicatorViewFrame = CGRect(x: 0, y: titleViewHeight - 2, width: indicatorWidth, height: indicatorHeight)
-        
-        customTitleView.frame = titleViewFrame
-        customTitleView.frame.origin.x = self.frame.midX - titleViewWidth/2
-        
-        titleStackView.frame = stackViewFrame
-        
-        indicatorView.frame = indicatorViewFrame
-        indicatorView.backgroundColor = indicatorColor
         
         // for menuItems originX
-        itemsOriginX.removeAll()
-        var itemOriginX: CGFloat = 0
-        let itemWidth: CGFloat = titleViewWidth/CGFloat(buttonItems.count)
-        for item in buttonItems {
-            item.addTarget(self, action: #selector(contentOffSetXForButton(sender:)), for: .touchUpInside)
-            let itemFrame = CGRect(x: itemOriginX, y: 0, width: itemWidth, height: stackViewHeight)
-            item.frame = itemFrame
-            let indicatorOriginX = itemFrame.midX - indicatorWidth/2
-            itemsOriginX.append(indicatorOriginX)
-            itemOriginX += itemWidth
+        indicatorOriginsX.removeAll()
+        
+        let itemWidth: CGFloat = menuView.bounds.width/CGFloat(buttonItems.count)
+        for i in 0..<buttonItems.count {
+            let tmpFrame = CGRect(x: itemWidth*CGFloat(i), y: 0, width: itemWidth, height: 1)
+            let indicatorOriginX = tmpFrame.midX - indicatorWidth/2
+            indicatorOriginsX.append(indicatorOriginX)
         }
         
         // for sectionIndicatorView
-        indicatorView.frame.origin.x = itemsOriginX[0]
+        indicatorView.frame = CGRect(x: indicatorOriginsX[lastIndex], y: menuView.frame.height - realTitleBottomMargin, width: indicatorWidth, height: indicatorHeight)
         indicatorViewLastOriginX = indicatorView.frame.origin.x
         
-        // indicator copy view
-        indicatorCopyView.frame = indicatorView.frame
-        indicatorCopyView.backgroundColor = indicatorView.backgroundColor
-        indicatorCopyView.isHidden = true
-        
+        // For rotate
+        let contentOffset = CGPoint(x: scrollView.bounds.width * CGFloat(lastIndex), y: 0)
+        scrollView.setContentOffset(contentOffset, animated: false)
+
         // indicator scroll scale
-        let indicatorScale = itemsOriginX[1] - itemsOriginX[0]
+        let indicatorScale = indicatorOriginsX[1] - indicatorOriginsX[0]
         scale = indicatorScale / UIScreen.main.bounds.size.width
     }
     
-    
     private func firstLoadDataNotification() {
-        
-        if shouldAdjustCopyIndicatorView {
-            UIView.animate(withDuration: 0.0, animations: {
-                self.indicatorView?.frame.origin.x = self.indicatorViewLastOriginX
-            }) { (_) in
-                self.indicatorCopyView?.isHidden = true
-                self.indicatorView?.isHidden = false
-                
-                self.shouldAdjustCopyIndicatorView = false
-            }
-        }
         
         if self.firstShowWithItems.count > defaultOffsetPage {
             // 通知第一次显示对应的 vc
@@ -320,9 +320,10 @@ class JuScrollContentView: UIView {
         let scrollWithAnimation = canScrollWithAnimation(current: index)
         lastIndex = index
         
-        scrollView.setContentOffset(itemsViewFrame[index].origin, animated: scrollWithAnimation)
+        let shouldScrollOffset = CGPoint(x: CGFloat(index)*scrollView.bounds.width, y: 0)
+        scrollView.setContentOffset(shouldScrollOffset, animated: scrollWithAnimation)
         UIView.animate(withDuration: moveDuration, animations: {
-            self.indicatorView.frame.origin.x = self.itemsOriginX[index]
+            self.indicatorView.frame.origin.x = self.indicatorOriginsX[index]
             self.indicatorViewLastOriginX = self.indicatorView.frame.origin.x
             
             if self.firstShowWithItems[index] == false {
@@ -355,7 +356,7 @@ extension JuScrollContentView: UIScrollViewDelegate {
         }
         
         UIView.animate(withDuration: moveDuration, animations: {
-            let x = scrollView.contentOffset.x * self.scale + self.itemsOriginX[0]
+            let x = scrollView.contentOffset.x * self.scale + self.indicatorOriginsX[0]
             self.indicatorView.frame.origin.x = x
             self.indicatorViewLastOriginX = x
         })

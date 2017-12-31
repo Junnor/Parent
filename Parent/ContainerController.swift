@@ -1,5 +1,5 @@
 //
-//  MyCollectionViewController.swift
+//  ContainerController.swift
 //  Parent
 //
 //  Created by Ju on 2017/12/29.
@@ -14,7 +14,7 @@ enum MyCollectionContainer: Int {
     case moebuy = 1
 }
 
-class MyCollectionController: UIViewController {
+class ContainerController: UIViewController {
     
     
     private let controllerTitle = "我的收藏"
@@ -29,52 +29,65 @@ class MyCollectionController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        print("viewDidLayoutSubviews 0")
+        print("view bounds = \(UIScreen.main.bounds)")
+
         scrollContainer.frame = containerView.bounds
-        print("viewDidLayoutSubviews 1")
+        scrollContainer.setNeedsUpdateConstraints()
     }
     
     @IBOutlet weak var containerView: UIView!
     
     // MARK: - For menu container
     
-    private var moebuyCollection: MoeBuyCollectionViewController!
+    private var twovc: SecondViewController!
     
     private var scrollContainer: JuScrollContentView!
     private func initializerMenuContainer() {
         // Button items
-        let shop = UIButton()
-        let gift = UIButton()
+        let one = UIButton()
+        let two = UIButton()
+        let three = UIButton()
         
-        shop.setTitle("购物", for: .normal)
-        gift.setTitle("兑换", for: .normal)
-        
+        one.setTitle("One", for: .normal)
+        two.setTitle("Two", for: .normal)
+        three.setTitle("Threeeeeeeee", for: .normal)
+
         var buttonItems = [UIButton]()
-        buttonItems.append(shop)
-        buttonItems.append(gift)
-        
+        buttonItems.append(one)
+        buttonItems.append(two)
+        buttonItems.append(three)
+
         // SubViewControllers
-        let postCollection = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PostCollectionViewController") as! PostCollectionViewController
-        moebuyCollection = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MoeBuyCollectionViewController") as! MoeBuyCollectionViewController
-        
+        let onevc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "FirstViewController") as! FirstViewController
+        twovc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SecondViewController") as! SecondViewController
+        let threevc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ThirdViewController") as! ThirdViewController
+
         var viewItems = [UIView]()
         
-        viewItems.append(postCollection.view)
-        viewItems.append(moebuyCollection.view)
-        
+        viewItems.append(onevc.view)
+        viewItems.append(twovc.view)
+        viewItems.append(threevc.view)
+
         // Container(subViewController's view will added to container)
         scrollContainer = JuScrollContentView(frame: containerView.bounds, buttonItems: buttonItems, viewItems: viewItems)
         containerView.addSubview(scrollContainer)
         scrollContainer.containerTitle = controllerTitle
-        print("init scrollContainer")
 
         // Add subViewControllers to self
-        addChildViewController(postCollection)
-        postCollection.didMove(toParentViewController: self)
+        addChildViewController(onevc)
+        onevc.didMove(toParentViewController: self)
         
-        addChildViewController(moebuyCollection)
-        moebuyCollection.didMove(toParentViewController: self)
+        addChildViewController(twovc)
+        twovc.didMove(toParentViewController: self)
         
+        addChildViewController(threevc)
+        threevc.didMove(toParentViewController: self)
+        
+        // Color view
+        onevc.view.backgroundColor = UIColor.cyan.withAlphaComponent(1)
+        twovc.view.backgroundColor = UIColor.cyan.withAlphaComponent(0.5)
+        threevc.view.backgroundColor = UIColor.cyan.withAlphaComponent(0.2)
+
         // Set notification
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(scrollAtIndex(notification:)),
@@ -82,10 +95,10 @@ class MyCollectionController: UIViewController {
                                                object: nil)
     }
     
+    
     @objc private func scrollAtIndex(notification: NSNotification) {
         guard let userInfo = notification.userInfo,
-            let index = userInfo["currentIndex"] as? Int else { return }
-        print("at index = \(index)")
+            let _ = userInfo["currentIndex"] as? Int else { return }
     }
     
     
